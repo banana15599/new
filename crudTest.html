@@ -1,0 +1,284 @@
+<!doctype html>
+<html>
+    <head>
+        <title>CRUD Test</title>
+        <link rel="shortcut icon" 
+              href="../lab_tests/./Sicons-Basic-Round-Social-Jquery.ico" type="image/x-icon" />
+        <link href="./css/jquery-ui.min.css" rel="stylesheet"/>
+        <link href="./css/jquery-ui.theme.min.css" rel="stylesheet"/>
+		<style>
+			* {
+				word-wrap: break-word;
+			}
+			
+			body {
+				margin: 20px;
+			}
+			
+			/* table */
+			#productTable, #productTable th, #productTable td {
+				border: 1px solid #000;
+				border-collapse: collapse;
+			}
+			
+			#productTable th, #productTable td {
+				padding: 4px;
+				max-width: 180px;
+			}
+			
+			/* edit & delete */
+			#productTable tbody tr td:first-child, #productTable tbody tr td:last-child {
+				padding: 4px 15px;
+			}
+			
+			.edit, .delete {
+				display: block;
+				padding: 0;
+			}
+			
+			/* open the addProduct Box */
+			#btn1 {
+				margin: 5px;
+			}
+			
+			/* addProduct & editProduct */
+			#productBox {
+				display: none;
+				width: 250px;
+				height: 288px;
+				border: 2px solid dodgerblue;
+				border-radius: 3px;
+			}
+			
+			#addBoxTitle {
+				padding: 5px;
+				color: #fff;
+				background-color: dodgerblue;
+				overflow: hidden;
+			}
+			
+			.close {
+				float: right;
+				margin: 1px 0 0 0;
+				border: 0px;
+				padding: 0px;
+			}
+			
+			#productContent {
+				padding: 10px;
+			}
+			
+			#productBox input[type="text"] {
+				width: 100%;
+				font-size: 16px;
+				margin-bottom: 24px;
+				border: 1px solid #ccc;
+				border-radius: 3px;
+			}
+			
+			#productBox #btn2 {
+				margin: 0px 5px;
+				float: right;
+			}
+			
+		</style>
+        <script src="./js/jquery-3.3.1.min.js"></script>
+        <script src="./js/jquery-ui.min.js"></script>
+        <script>
+            $(document).ready(function() {
+				/* 如果沒有tbody就加一個 */
+				if ($("#productTable tbody").length == 0) {
+					$("#productTable").append("<tbody></tbody>");
+				};
+				
+				/* 開關AddProduct視窗 */
+				$("#btn1").bind("click", function() {
+					$("#btn2").text("Add");
+					$("#productBox").fadeIn();
+					$("#productName").focus();
+				});
+				
+				$(".close").bind("click", function() {
+					$("#productBox").fadeOut();
+				});
+				
+				/* 新增&更新 table元素 */
+				$("#btn2").bind("click", function() {
+					if($(this).text() == "Add"){
+						productAdd(nextId);
+						nextId += 1;
+						formClear();
+						$("#productName").focus();
+					}
+					else {
+						productUpdate(activeId);
+						formClear();
+						$("#productBox").fadeOut();
+					}
+				});
+				
+				/* 更新table元素 */
+				$(document).on("click", ".edit", function() {
+					$("#productBox").fadeIn();
+					$("#productName").focus();
+					productUpdateDisplay(this);
+				});
+				
+				/* 刪除table元素 */
+				$(document).on("click", ".delete", function() {
+					productDelete(this);
+				});
+            });
+			var row = null;
+			var nextId = 1;
+			var activeId = 0;
+			
+			/* 新增Product */
+			function productAdd(id) {
+				if ($("#productName").val() != null && $("#productName").val() != '') {
+					$("#productTable tbody").append(
+						"<tr>" + 
+							"<td>" + 
+								"<button class='edit' data-id='" + id + "'>" + 
+									"<span class='ui-button-icon ui-icon ui-icon-pencil'></span>" + 
+								"</button>" + 
+							"</td>" + 
+							"<td>" + $("#productName").val() + "</td>" + 
+							"<td>" + $("#introDate").val()   + "</td>" + 
+							"<td>" + $("#url").val()         + "</td>" + 
+							"<td>" + 
+								"<button class='delete' data-id='" + id + "'>" + 
+									"<span class='ui-button-icon ui-icon ui-icon-closethick'></span>" + 
+								"</button>" + 
+							"</td>" + 
+						"</tr>"
+					);
+				}
+			}
+			
+			/* 更新Product */
+			function productUpdateDisplay(edit) {
+				row = $(edit).parents("tr");
+				var col = row.children("td");
+				activeId = $($(col[0]).children("button")[0]).data("id");
+				$("#productName").val($(col[1]).text());
+				$("#introDate"  ).val($(col[2]).text());
+				$("#url"        ).val($(col[3]).text());
+				$("#btn2").text("Update");
+			}
+			
+			function productUpdate(id) {
+				if ($("#productName").val() != null && $("#productName").val() != '') {
+					var row = $("#productTable button[data-id = '" + id + "']").parents("tr")[0];
+					$(row).after(
+						"<tr>" + 
+							"<td>" +
+								"<button class='edit' data-id='" + id + "'>" + 
+									"<span class='ui-button-icon ui-icon ui-icon-pencil'></span>" +
+								"</button>" +  
+							"</td>" + 
+							"<td>" + $("#productName").val() + "</td>" + 
+							"<td>" + $("#introDate").val()   + "</td>" + 
+							"<td>" + $("#url").val()         + "</td>" + 
+							"<td>" + 
+								"<button class='delete' data-id='" + id + "'>" +
+									"<span class='ui-button-icon ui-icon ui-icon-closethick'></span>" +
+								"</button>" + 
+							"</td>" + 
+						"</tr>"
+					);
+					$(row).remove();
+				}
+			}
+			
+			/* 刪除Product元素 */
+			function productDelete(id) {
+				$(id).parents("tr").remove();
+			}
+			
+			/* 重製AddProduct視窗 */
+			function formClear() {
+				$("#productName").val('');
+				$("#introDate").val('');
+				$("#url").val('');
+			}
+			
+        </script>
+    </head>
+    <body>
+		<h1>List Products</h1>
+		<table id="productTable">
+			<thead>
+				<tr>
+					<th>Edit</th>
+					<th>Product Name</th>
+					<th>Introduction Date</th>
+					<th>URL</th>
+					<th>Delete</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<button class="edit" data-id="1"><span class="ui-button-icon ui-icon ui-icon-pencil"></span></button>
+					</td>
+					<td>Extending Bootstrap with CSS. Javascript and JQuery</td>
+					<td>6/11/2015</td>
+					<td>http://bit.ly/1SNzc0i</td>
+					<td>
+						<button class="delete" data-id="1">
+							<span class="ui-button-icon ui-icon ui-icon-closethick"></span>
+						</button>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<button class="edit" data-id="2"><span class="ui-button-icon ui-icon ui-icon-pencil"></span></button>
+					</td>
+					<td>Build your own Bootstrap Business Application Template in MVC</td>
+					<td>1/29/2015</td>
+					<td>http://bit.ly/1I8ZqZg</td>
+					<td>
+						<button class="delete" data-id="2">
+							<span class="ui-button-icon ui-icon ui-icon-closethick"></span>
+						</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<button id="btn1" class="ui-button ui-widget ui-corner-all">Add a Product</button><br>
+		<div id="productBox">
+			<div id="addBoxTitle">
+				<span>Product Information</span>
+				<button class="close ui-button">
+					<span class="ui-button-icon ui-icon ui-icon-closethick"></span>
+				</button>
+			</div>
+			<div id="productContent">
+				Product Name<br>
+				<input type="text" id="productName" /><br>
+				Introduction Date<br>
+				<input type="text" id="introDate" /><br>
+				URL<br>
+				<input type="text" id="url" /><br>
+			</div>
+			<button id="btn2" class="ui-button ui-widget ui-corner-all">Add</button>
+		</div>
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
